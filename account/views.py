@@ -23,7 +23,18 @@ def signup(request):
         #user wants enter inf
         return render(request, 'account/signup.html')
 def login(request):
-    return render(request, 'account/login.html')
+    if(request.method == 'POST'):
+        user = auth.authenticate(username = request.POST['username'], password = request.POST['password'])
+        if(user is not None):
+           auth.login(request, user)
+           return redirect('homepage') 
+        else:
+            return render(request, 'account/login.html', {'error': "Username or password is invalid."})
+    else:
+        return render(request, 'account/login.html')
 def logout(request):
     # TODO Need to route to homepage
-    return render(request, 'account/account.html')
+    if (request.method =='POST'):
+        
+        auth.logout(request)
+        return redirect('homepage')
