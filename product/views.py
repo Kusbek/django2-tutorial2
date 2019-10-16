@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Product
+from .models import Vote
 from django.utils import timezone
 
 def homepage(request):
@@ -38,6 +39,15 @@ def detail(request, prod_id):
 def upvote(request, prod_id):
     if(request.method == "POST"):
         product = get_object_or_404(Product, pk = prod_id)
-        product.votes_total += 1
-        product.save()
+        try:
+            vote = Vote.objects.get(hunter= request.user, product = product)
+            vote.delete()
+            product.votes_total -= 1
+        except Vote.DoesNotExist:
+            newvote = Vote()
+            newvote.hunter = request.user
+            newvote.product = product
+            newvote.save()
+            product.votes_total += 1
+        product.save()    
         return redirect('/product/' + str(product.id))

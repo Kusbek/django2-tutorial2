@@ -21,3 +21,10 @@ class Product(models.Model):
     def pub_date_pretty(self):
         return self.pub_date.strftime('%b %e %Y')
 
+class Vote(models.Model):
+    product = models.ForeignKey(Product, on_delete = models.CASCADE, default ="")
+    hunter = models.ForeignKey(User, on_delete = models.CASCADE, default = "")
+
+    def __str__(self):
+
+        return self.hunter.username + " " + self.product.title
